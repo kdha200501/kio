@@ -1220,12 +1220,12 @@ void KFileWidgetPrivate::initToolbar()
         toggleBookmarks(show);
     });
 
-    m_toggleQuickFilterAction = new KToggleAction(i18n("Show Quick Filter"), q);
-    q->addAction(m_toggleQuickFilterAction);
-    m_toggleQuickFilterAction->setShortcuts(QList{QKeySequence(Qt::CTRL | Qt::Key_I), QKeySequence(Qt::Key_Backslash)});
-    q->connect(m_toggleQuickFilterAction, &QAction::toggled, q, [this](bool show) {
-        setQuickFilterVisible(show);
-    });
+//     m_toggleQuickFilterAction = new KToggleAction(i18n("Show Quick Filter"), q);
+//     q->addAction(m_toggleQuickFilterAction);
+//     m_toggleQuickFilterAction->setShortcuts(QList{QKeySequence(Qt::CTRL | Qt::Key_I), QKeySequence(Qt::Key_Backslash)});
+//     q->connect(m_toggleQuickFilterAction, &QAction::toggled, q, [this](bool show) {
+//         setQuickFilterVisible(show);
+//     });
 
     // Build the settings menu
     KActionMenu *menu = new KActionMenu(QIcon::fromTheme(QStringLiteral("configure")), i18n("Options"), q);
