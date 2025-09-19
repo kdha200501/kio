@@ -8,7 +8,8 @@
 #define KDIROPERATORDETAILVIEW_P_H
 
 #include <KDirOperator>
-#include <QTreeView>
+#include <QListView>
+#include <QModelIndex>
 
 #include <kfile.h>
 
@@ -19,7 +20,7 @@ class QAbstractItemModel;
  * custom resizing options and columns.
  * \internal
  */
-class KDirOperatorDetailView : public QTreeView
+class KDirOperatorDetailView : public QListView
 {
     Q_OBJECT
 
@@ -31,6 +32,14 @@ public:
      * Displays either Detail, Tree or DetailTree modes.
      */
     virtual bool setViewMode(KFile::FileView viewMode);
+
+    void setRootIsDecorated(bool b);
+    void setSortingEnabled(bool b);
+    void setUniformRowHeights(bool b);
+    void setItemsExpandable(bool b);
+    void setColumnHidden(int column, bool hide);
+    void hideColumn(int column);
+    void expand(const QModelIndex &index);
 
 protected:
     void initViewItemOption(QStyleOptionViewItem *option) const override;
