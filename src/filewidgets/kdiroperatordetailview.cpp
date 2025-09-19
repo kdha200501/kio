@@ -19,7 +19,7 @@
 #include <QScrollBar>
 
 KDirOperatorDetailView::KDirOperatorDetailView(KDirOperator *dirOperator, QWidget *parent)
-    : QTreeView(parent)
+    : QListView(parent)
     , m_hideDetailColumns(false)
     , m_isEmblemClicked(false)
     , m_dirOperator(dirOperator)
@@ -39,6 +39,14 @@ KDirOperatorDetailView::KDirOperatorDetailView(KDirOperator *dirOperator, QWidge
     verticalScrollBar()->setSingleStep(singleStep);
     horizontalScrollBar()->setSingleStep(singleStep);
 }
+
+void KDirOperatorDetailView::setRootIsDecorated(bool b) {}
+void KDirOperatorDetailView::setSortingEnabled(bool b) {}
+void KDirOperatorDetailView::setUniformRowHeights(bool b) {}
+void KDirOperatorDetailView::setItemsExpandable(bool b) {}
+void KDirOperatorDetailView::setColumnHidden(int column, bool hide) {}
+void KDirOperatorDetailView::hideColumn(int column) {}
+void KDirOperatorDetailView::expand(const QModelIndex &index) {}
 
 KDirOperatorDetailView::~KDirOperatorDetailView()
 {
@@ -68,30 +76,30 @@ bool KDirOperatorDetailView::setViewMode(KFile::FileView viewMode)
     // This allows to have a horizontal scrollbar in case this view is used as
     // a plain treeview instead of cutting off filenames, especially useful when
     // using KDirOperator in horizontally limited parts of an app.
-    if (tree && m_hideDetailColumns) {
-        header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    } else {
-        header()->setSectionResizeMode(QHeaderView::Interactive);
-    }
+    // if (tree && m_hideDetailColumns) {
+    //     header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    // } else {
+    //     header()->setSectionResizeMode(QHeaderView::Interactive);
+    // }
 
     return true;
 }
 
 void KDirOperatorDetailView::initViewItemOption(QStyleOptionViewItem *option) const
 {
-    QTreeView::initViewItemOption(option);
+    QListView::initViewItemOption(option);
     option->textElideMode = Qt::ElideMiddle;
 }
 
 bool KDirOperatorDetailView::event(QEvent *event)
 {
     if (event->type() == QEvent::Polish) {
-        QHeaderView *headerView = header();
-        headerView->setSectionResizeMode(0, QHeaderView::Stretch);
-        headerView->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-        headerView->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-        headerView->setStretchLastSection(false);
-        headerView->setSectionsMovable(false);
+        // QHeaderView *headerView = header();
+        // headerView->setSectionResizeMode(0, QHeaderView::Stretch);
+        // headerView->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+        // headerView->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+        // headerView->setStretchLastSection(false);
+        // headerView->setSectionsMovable(false);
 
         setColumnHidden(KDirModel::Size, m_hideDetailColumns);
         setColumnHidden(KDirModel::ModifiedTime, m_hideDetailColumns);
@@ -106,7 +114,7 @@ bool KDirOperatorDetailView::event(QEvent *event)
         }
     }
 
-    return QTreeView::event(event);
+    return QListView::event(event);
 }
 
 void KDirOperatorDetailView::dragEnterEvent(QDragEnterEvent *event)
@@ -125,7 +133,7 @@ void KDirOperatorDetailView::mousePressEvent(QMouseEvent *event)
         return;
     }
 
-    QTreeView::mousePressEvent(event);
+    QListView::mousePressEvent(event);
 
     if (!index.isValid() || (index.column() != KDirModel::Name)) {
         const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
@@ -141,7 +149,7 @@ void KDirOperatorDetailView::mouseMoveEvent(QMouseEvent *event)
     if (m_isEmblemClicked) {
         return;
     }
-    QTreeView::mouseMoveEvent(event);
+    QListView::mouseMoveEvent(event);
 }
 
 void KDirOperatorDetailView::mouseReleaseEvent(QMouseEvent *event)
@@ -150,12 +158,12 @@ void KDirOperatorDetailView::mouseReleaseEvent(QMouseEvent *event)
     if (m_isEmblemClicked) {
         m_isEmblemClicked = false;
     }
-    QTreeView::mouseReleaseEvent(event);
+    QListView::mouseReleaseEvent(event);
 }
 
 void KDirOperatorDetailView::currentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
-    QTreeView::currentChanged(current, previous);
+    QListView::currentChanged(current, previous);
 }
 
 #include "moc_kdiroperatordetailview_p.cpp"
