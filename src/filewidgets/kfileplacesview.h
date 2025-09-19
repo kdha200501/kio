@@ -51,6 +51,7 @@ public:
      * \since 5.91
      */
     bool allPlacesShown() const;
+    bool isDragging() const;
 
     /*!
      * If \a enabled is true, it is allowed dropping items
