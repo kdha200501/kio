@@ -460,6 +460,10 @@ void KUrlNavigatorPrivate::slotReturnPressed()
         };
         QMetaObject::invokeMethod(q, switchModeFunc, Qt::QueuedConnection);
     }
+
+    if(m_editable) {
+        switchView();
+    }
 }
 
 void KUrlNavigatorPrivate::slotSchemeChanged(const QString &scheme)
@@ -1215,6 +1219,8 @@ void KUrlNavigator::keyPressEvent(QKeyEvent *event)
 {
     if (isUrlEditable() && (event->key() == Qt::Key_Escape)) {
         setUrlEditable(false);
+        d->m_pathBox->setUrl(d->m_coreUrlNavigator->currentLocationUrl());
+        Q_EMIT returnPressed();
     } else {
         QWidget::keyPressEvent(event);
     }
@@ -1304,6 +1310,15 @@ bool KUrlNavigator::eventFilter(QObject *watched, QEvent *event)
     // Avoid the "Properties" action from triggering instead of new tab.
     case QEvent::ShortcutOverride: {
         auto *keyEvent = static_cast<QKeyEvent *>(event);
+
+        // in case the return key is mapped to F2, but that would be the wrong thing to do because,
+        // macOS does not use the enter key to initiate a rename in the file dialog
+        // if (keyEvent->key() == Qt::Key_F2) {
+        //     Q_EMIT d->m_pathBox->returnPressed(d->m_pathBox->currentText());
+        //     event->ignore();
+        //     return false;
+        // }
+
         if ((keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return)
             && (keyEvent->modifiers() & Qt::AltModifier || keyEvent->modifiers() & Qt::ShiftModifier)) {
             event->accept();
