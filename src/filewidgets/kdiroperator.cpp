@@ -1423,6 +1423,53 @@ bool KDirOperator::eventFilter(QObject *watched, QEvent *event)
     }
     case QEvent::KeyPress: {
         QKeyEvent *evt = static_cast<QKeyEvent *>(event);
+
+        if (evt->key() == Qt::Key_Down && evt->modifiers() == Qt::ControlModifier) {
+            QModelIndex index = d->m_itemView->currentIndex();
+            d->slotActivated(index);
+            return true; // handled
+        }
+
+        if (evt->key() == Qt::Key_Up && evt->modifiers() == Qt::AltModifier) {
+            QItemSelectionModel *selModel = d->m_itemView->selectionModel();
+
+            if(!selModel) {
+                return true; // handled
+            }
+
+            int rowCount = d->m_proxyModel->rowCount();
+
+            if(rowCount == 0) {
+                return true; // handled
+            }
+
+            QModelIndex index = d->m_proxyModel->index(0, 0);
+            selModel->clear();
+            selModel->setCurrentIndex(index, QItemSelectionModel::Select);
+            d->m_itemView->scrollTo(index, QAbstractItemView::PositionAtTop);
+            return true; // handled
+        }
+
+        if (evt->key() == Qt::Key_Down && evt->modifiers() == Qt::AltModifier) {
+            QItemSelectionModel *selModel = d->m_itemView->selectionModel();
+
+            if(!selModel) {
+                return true; // handled
+            }
+
+            int rowCount = d->m_proxyModel->rowCount();
+
+            if(rowCount == 0) {
+                return true; // handled
+            }
+
+            QModelIndex index = d->m_proxyModel->index(rowCount - 1, 0);
+            selModel->clear();
+            selModel->setCurrentIndex(index, QItemSelectionModel::Select);
+            d->m_itemView->scrollTo(index, QAbstractItemView::PositionAtTop);
+            return true; // handled
+        }
+
         if (evt->key() == Qt::Key_Return || evt->key() == Qt::Key_Enter) {
             // when no elements are selected and Return/Enter is pressed
             // emit keyEnterReturnPressed
@@ -2243,7 +2290,7 @@ void KDirOperator::setupActions()
     action = new QAction(i18n("Properties"), this);
     d->m_actions[Properties] = action;
     action->setIcon(QIcon::fromTheme(QStringLiteral("document-properties")));
-    action->setShortcut(Qt::ALT | Qt::Key_Return);
+    action->setShortcut(Qt::ControlModifier | Qt::Key_I);
     connect(action, &QAction::triggered, this, [this]() {
         d->slotProperties();
     });
@@ -2696,7 +2743,7 @@ void KDirOperatorPrivate::slotActivated(const QModelIndex &index)
     KFileItem item = m_dirModel->itemForIndex(dirIndex);
 
     const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
-    if (item.isNull() || (modifiers & Qt::ShiftModifier) || (modifiers & Qt::ControlModifier)) {
+    if (item.isNull() || (modifiers & Qt::ShiftModifier)) {
         return;
     }
 
