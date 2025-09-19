@@ -1730,13 +1730,13 @@ void KDirOperator::setViewInternal(QAbstractItemView *view)
     // d->itemView->setDropOptions(d->dropOptions);
 
     // first push our settings to the view, then listen for changes from the view
-    QTreeView *treeView = qobject_cast<QTreeView *>(d->m_itemView);
+    KDirOperatorDetailView *treeView = qobject_cast<KDirOperatorDetailView *>(d->m_itemView);
     if (treeView) {
-        QHeaderView *headerView = treeView->header();
-        headerView->setSortIndicator(d->sortColumn(), d->sortOrder());
-        connect(headerView, &QHeaderView::sortIndicatorChanged, this, [this](int logicalIndex, Qt::SortOrder order) {
-            d->synchronizeSortingState(logicalIndex, order);
-        });
+        // QHeaderView *headerView = treeView->header();
+        // headerView->setSortIndicator(d->sortColumn(), d->sortOrder());
+        // connect(headerView, &QHeaderView::sortIndicatorChanged, this, [this](int logicalIndex, Qt::SortOrder order) {
+        //     d->synchronizeSortingState(logicalIndex, order);
+        // });
     }
 
     connect(d->m_itemView, &QAbstractItemView::activated, this, [this](QModelIndex index) {
@@ -1780,7 +1780,7 @@ void KDirOperator::setViewInternal(QAbstractItemView *view)
     // needs to be done here, and not in createView, since we can be set an external view
     d->m_decorationMenu->setEnabled(qobject_cast<QListView *>(d->m_itemView));
 
-    d->m_shouldFetchForItems = qobject_cast<QTreeView *>(view);
+    d->m_shouldFetchForItems = qobject_cast<KDirOperatorDetailView *>(view);
     if (d->m_shouldFetchForItems) {
         connect(d->m_dirModel, &KDirModel::expand, this, [this](QModelIndex index) {
             d->slotExpandToUrl(index);
@@ -1827,7 +1827,7 @@ void KDirOperator::setDirLister(KDirLister *lister)
     d->m_dirModel->setDirLister(d->m_dirLister);
     d->m_dirModel->setDropsAllowed(KDirModel::DropOnDirectory);
 
-    d->m_shouldFetchForItems = qobject_cast<QTreeView *>(d->m_itemView);
+    d->m_shouldFetchForItems = qobject_cast<KDirOperatorDetailView *>(d->m_itemView);
     if (d->m_shouldFetchForItems) {
         connect(d->m_dirModel, &KDirModel::expand, this, [this](QModelIndex index) {
             d->slotExpandToUrl(index);
@@ -2890,7 +2890,7 @@ void KDirOperatorPrivate::slotChangeDecorationPosition()
 
 void KDirOperatorPrivate::slotExpandToUrl(const QModelIndex &index)
 {
-    QTreeView *treeView = qobject_cast<QTreeView *>(m_itemView);
+    KDirOperatorDetailView *treeView = qobject_cast<KDirOperatorDetailView *>(m_itemView);
 
     if (!treeView) {
         return;
