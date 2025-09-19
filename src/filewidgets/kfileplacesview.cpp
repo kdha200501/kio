@@ -132,12 +132,12 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
         painter->setOpacity(painter->opacity() * 0.6);
     }
 
-    if (!m_showHoverIndication) {
-        opt.state &= ~QStyle::State_MouseOver;
-    }
+    // if (!m_showHoverIndication) {
+    //     opt.state &= ~QStyle::State_MouseOver;
+    // }
 
     if (opt.state & QStyle::State_MouseOver) {
-        if (index == m_hoveredHeaderArea) {
+        if (index == m_hoveredHeaderArea || !m_view->isDragging()) {
             opt.state &= ~QStyle::State_MouseOver;
         }
     }
@@ -1069,6 +1069,15 @@ void KFilePlacesView::setUrl(const QUrl &url)
 bool KFilePlacesView::allPlacesShown() const
 {
     return d->m_showAll;
+}
+
+bool KFilePlacesView::isDragging() const
+{
+    // unfortunately, KIO does not support dropping on top of a place item (to move file/folder),
+    // so, there's no point of highlighting the place item when dragging
+    // return d->m_dragging;
+
+    return false;
 }
 
 void KFilePlacesView::setShowAll(bool showAll)
