@@ -1138,7 +1138,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     // Check if the item is being animated
     // ========================================================================
-    KIO::AnimationState *state = d->animationState(opt, index, view);
+    KIO::AnimationState *state = nullptr;
     KIO::CachedRendering *cache = nullptr;
     qreal progress = ((opt.state & QStyle::State_MouseOver) && index.column() == KDirModel::Name) ? 1.0 : 0.0;
     const QPoint iconPos = d->iconPosition(opt);
@@ -1320,6 +1320,8 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         opt.state |= QStyle::State_MouseOver;
         icon = d->applyHoverEffect(icon);
     }
+
+    opt.state &= ~QStyle::State_MouseOver;
 
     drawBackground(*painter, opt);
     painter->drawPixmap(iconPos, icon);
