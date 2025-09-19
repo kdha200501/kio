@@ -2255,6 +2255,7 @@ void KFileWidgetPrivate::activateUrlNavigator()
         m_urlNavigator->setUrlEditable(true);
         m_urlNavigator->setFocus();
         lineEdit->selectAll();
+        m_ops->view()->clearSelection();
     }
 }
 
