@@ -1828,6 +1828,9 @@ void KDirOperator::setDirLister(KDirLister *lister)
     });
     connect(d->m_dirLister, qOverload<>(&KCoreDirLister::completed), this, [this]() {
         d->slotIOFinished();
+        if(view()) {
+            view()->setFocus();
+        }
     });
     connect(d->m_dirLister, qOverload<>(&KCoreDirLister::canceled), this, [this]() {
         d->slotCanceled();
