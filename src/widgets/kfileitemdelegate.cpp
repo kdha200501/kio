@@ -1050,7 +1050,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     const qreal dpr = painter->device()->devicePixelRatioF();
 
-    qreal progress = (opt.state & QStyle::State_MouseOver) ? 1.0 : 0.0;
+    qreal progress = ((opt.state & QStyle::State_MouseOver) && index.column() == KDirModel::Name) ? 1.0 : 0.0;
     const QPoint iconPos = d->iconPosition(opt);
     QIcon::Mode iconMode;
 
@@ -1110,6 +1110,8 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         opt.state |= QStyle::State_MouseOver;
         icon = d->applyHoverEffect(icon);
     }
+
+    opt.state &= ~QStyle::State_MouseOver;
 
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, opt.widget);
 
