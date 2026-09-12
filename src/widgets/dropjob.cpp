@@ -599,19 +599,16 @@ void DropJobPrivate::handleCopyToDirectory()
         // No point in asking copy/move/link when using dragging from the trash, just move the file out.
         m_dropAction = Qt::MoveAction;
         err = KJob::NoError; // Ok
-    } else if (defaultActionIsMove && (m_possibleActions & Qt::MoveAction) && allItemsAreLocal && allItemsAreSameDevice) {
-        if (m_keyboardModifiers == Qt::NoModifier) {
-            m_dropAction = Qt::MoveAction;
-            err = KJob::NoError; // Ok
-        } else if (m_keyboardModifiers == Qt::ShiftModifier) {
-            // the user requests to show the menu
-            err = KIO::ERR_UNKNOWN;
-        } else if (m_keyboardModifiers & (Qt::ControlModifier | Qt::AltModifier)) {
-            // Qt determined m_dropAction from the modifiers
-            err = KJob::NoError; // Ok
+    } else if (m_keyboardModifiers & Qt::AltModifier) {
+        if (m_keyboardModifiers & Qt::ControlModifier) {
+            m_dropAction = Qt::LinkAction;
+        } else {
+            m_dropAction = Qt::CopyAction;
         }
-    } else if (m_keyboardModifiers & (Qt::ControlModifier | Qt::ShiftModifier | Qt::AltModifier)) {
-        // Qt determined m_dropAction from the modifiers already
+        err = KJob::NoError; // Ok
+    } else {
+        // No modifiers: move directly, no popup menu
+        m_dropAction = Qt::MoveAction;
         err = KJob::NoError; // Ok
     }
     slotDropActionDetermined(err);
