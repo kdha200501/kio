@@ -9,6 +9,7 @@
 
 #include <kdirlister.h>
 #include <kdirmodel.h>
+#include <KIO/DndActionSuggest>
 
 #include <QApplication>
 #include <QDragEnterEvent>
@@ -119,9 +120,26 @@ bool KDirOperatorDetailView::event(QEvent *event)
 
 void KDirOperatorDetailView::dragEnterEvent(QDragEnterEvent *event)
 {
-    if (event->mimeData()->hasUrls()) {
+    if (!event->mimeData()->hasUrls()) {
+        event->ignore();
+        return;
+    }
+
+    // Same-device-aware preferred action for the hover glyph: drive the
+    // wl_data_offer preferred action from the sources' device vs. the
+    // destination, mirroring what KIO::DropJob will eventually perform on
+    // drop.  When the guess is ambiguous, preserve Qt's original
+    // proposed action.
+    const auto urls = event->mimeData()->urls();
+    const auto guess = KIO::suggestActionForDrop(urls, m_dirOperator->url());
+    if (guess == KIO::DndActionGuess::Move && (event->possibleActions() & Qt::MoveAction)) {
+        event->setDropAction(Qt::MoveAction);
+    } else if (guess == KIO::DndActionGuess::Copy && (event->possibleActions() & Qt::CopyAction)) {
+        event->setDropAction(Qt::CopyAction);
+    } else {
         event->acceptProposedAction();
     }
+    event->accept();
 }
 
 void KDirOperatorDetailView::mousePressEvent(QMouseEvent *event)

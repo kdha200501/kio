@@ -53,6 +53,7 @@ target_sources(KF6KIOWidgets PRIVATE
   joburlcache.cpp
   kdirmodel.cpp
   dropjob.cpp
+  dndactionsuggest.cpp
   kbuildsycocaprogressdialog.cpp
   renamefiledialog.cpp
   kfileitemdelegate.cpp
@@ -169,6 +170,7 @@ ecm_generate_headers(KIOWidgets_Namespaced_CamelCase_HEADERS
   HEADER_NAMES
   DeleteOrTrashJob
   SslUi
+  DndActionSuggest
   DropJob
   PasteJob
   RenameDialog

@@ -15,6 +15,7 @@
 
 #include <KFileItemDelegate>
 #include <KIconLoader>
+#include <KIO/DndActionSuggest>
 
 KDirOperatorIconView::KDirOperatorIconView(KDirOperator *dirOperator, QWidget *parent, QStyleOptionViewItem::Position aDecorationPosition)
     : QListView(parent)
@@ -70,9 +71,25 @@ void KDirOperatorIconView::initViewItemOption(QStyleOptionViewItem *option) cons
 
 void KDirOperatorIconView::dragEnterEvent(QDragEnterEvent *event)
 {
-    if (event->mimeData()->hasUrls()) {
-        event->acceptProposedAction();
+    if (!event->mimeData()->hasUrls()) {
+        event->ignore();
+        return;
     }
+
+    // Same-device-aware preferred action: pick the unmodified default from
+    // the source vs. destination device comparison (Move on same device, Copy
+    // otherwise, including the conservative Ask fallback for non-local
+    // destinations), mirroring what KIO::DropJob does on drop.  Key
+    // modifiers are handled by the compositor on top of this, so we report the
+    // default here.
+    const auto urls = event->mimeData()->urls();
+    const auto guess = KIO::suggestActionForDrop(urls, m_dirOperator->url());
+    if (guess == KIO::DndActionGuess::Move) {
+        event->setDropAction(Qt::MoveAction);
+    } else {
+        event->setDropAction(Qt::CopyAction);
+    }
+    event->accept();
 }
 
 void KDirOperatorIconView::mousePressEvent(QMouseEvent *event)
