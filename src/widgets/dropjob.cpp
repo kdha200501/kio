@@ -22,6 +22,7 @@
 #include <KIO/ApplicationLauncherJob>
 #include <KIO/CommandLauncherJob>
 #include <KIO/CopyJob>
+#include <KIO/DndActionSuggest>
 #include <KIO/DndPopupMenuPlugin>
 #include <KIO/FileUndoManager>
 #include <KJobWidgets>
@@ -599,19 +600,34 @@ void DropJobPrivate::handleCopyToDirectory()
         // No point in asking copy/move/link when using dragging from the trash, just move the file out.
         m_dropAction = Qt::MoveAction;
         err = KJob::NoError; // Ok
-    } else if (defaultActionIsMove && (m_possibleActions & Qt::MoveAction) && allItemsAreLocal && allItemsAreSameDevice) {
-        if (m_keyboardModifiers == Qt::NoModifier) {
-            m_dropAction = Qt::MoveAction;
-            err = KJob::NoError; // Ok
-        } else if (m_keyboardModifiers == Qt::ShiftModifier) {
-            // the user requests to show the menu
-            err = KIO::ERR_UNKNOWN;
-        } else if (m_keyboardModifiers & (Qt::ControlModifier | Qt::AltModifier)) {
-            // Qt determined m_dropAction from the modifiers
-            err = KJob::NoError; // Ok
+    } else if (m_keyboardModifiers & Qt::AltModifier) {
+        if (m_keyboardModifiers & Qt::ControlModifier) {
+            m_dropAction = Qt::LinkAction;
+        } else {
+            m_dropAction = Qt::CopyAction;
         }
-    } else if (m_keyboardModifiers & (Qt::ControlModifier | Qt::ShiftModifier | Qt::AltModifier)) {
-        // Qt determined m_dropAction from the modifiers already
+        err = KJob::NoError; // Ok
+    } else if (equalDestination) {
+        // No modifiers, and every source is already directly inside destUrl: a
+        // Move here would just collide with itself (same name, same folder),
+        // surfacing as a bogus "overwrite?" prompt. Like macOS Finder, dropping
+        // items back into the folder they already live in is a no-op.
+        slotDropActionDetermined(KIO::ERR_USER_CANCELED);
+        return;
+    } else {
+        // No modifiers: pick the action using the same same-device-aware
+        // logic used to compute the hover glyph, so glyph and action always
+        // agree. Only an explicit Move guess (same device) actually moves;
+        // Copy and the conservative Ask fallback (e.g. non-local destinations,
+        // like dragging onto a remote sftp location) must both copy, since
+        // Ask is documented as "safe fallback when we cannot tell" and Move
+        // is destructive (deletes the source).
+        const auto guess = KIO::suggestActionForDrop(m_urls, m_destUrl);
+        if (guess == KIO::DndActionGuess::Move) {
+            m_dropAction = Qt::MoveAction;
+        } else {
+            m_dropAction = Qt::CopyAction;
+        }
         err = KJob::NoError; // Ok
     }
     slotDropActionDetermined(err);
