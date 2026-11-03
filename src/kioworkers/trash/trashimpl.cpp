@@ -684,6 +684,10 @@ bool TrashImpl::emptyTrash()
 
     fileRemoved();
 
+#ifdef WITH_QTDBUS
+    org::kde::KDirNotify::emitTrashEmptied();
+#endif
+
     return m_lastErrorCode == 0;
 }
 
