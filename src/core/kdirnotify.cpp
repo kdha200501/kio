@@ -61,6 +61,11 @@ void OrgKdeKDirNotifyInterface::emitFilesRemoved(const QList<QUrl> &fileList)
     emitSignal(QStringLiteral("FilesRemoved"), QVariantList{QVariant(QUrl::toStringList(fileList))});
 }
 
+void OrgKdeKDirNotifyInterface::emitTrashEmptied()
+{
+    emitSignal(QStringLiteral("TrashEmptied"), QVariantList{});
+}
+
 void OrgKdeKDirNotifyInterface::emitEnteredDirectory(const QUrl &url)
 {
     emitSignal(QStringLiteral("enteredDirectory"), QVariantList{QVariant(url.toString())});

@@ -108,6 +108,11 @@ Q_SIGNALS: // SIGNALS
      */
     void FilesRemoved(const QStringList &fileList);
     /*!
+     * Emitted when the empty-trash action is performed (as opposed to restoring
+     * or moving out items, which also empties the trash without this being emitted).
+     */
+    void TrashEmptied();
+    /*!
      */
     void enteredDirectory(const QString &url);
     /*!
@@ -139,6 +144,10 @@ public:
     /*!
      */
     static void emitFilesRemoved(const QList<QUrl> &fileList);
+    /*!
+     * \since 6.31
+     */
+    static void emitTrashEmptied();
     /*!
      */
     static void emitEnteredDirectory(const QUrl &url);
